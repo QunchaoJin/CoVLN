@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Co-VLN: Does Peer Observation Help? Vision-Sharing Collaboration for Vision-Language Navigation (ACCV 2026)">
+<title>Co-VLN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Source+Sans+3:wght@400;600&family=Source+Code+Pro:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#fbfbfc;--surface:#ffffff;--ink:#1b2230;--muted:#5c6673;--border:#e4e8ee;--soft:#f1f3f7;
+  --accent:#1f5fbf;--accent-ink:#ffffff;--ours:#eaf1fb;--gain:#1e7a45;
+  --blue:#2f7bd1;--orange:#e8912d;--green:#2e8b57;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0f1318;--surface:#161b22;--ink:#e6eaf0;--muted:#9aa4b1;--border:#2a313b;--soft:#1c222b;
+    --accent:#6ea3ee;--accent-ink:#0f1318;--ours:#1a2636;--gain:#5fcf8a;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0f1318;--surface:#161b22;--ink:#e6eaf0;--muted:#9aa4b1;--border:#2a313b;--soft:#1c222b;
+  --accent:#6ea3ee;--accent-ink:#0f1318;--ours:#1a2636;--gain:#5fcf8a;
+}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;font-size:16.5px;line-height:1.6;padding-inline:16px;padding-block:0 64px;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+h1,h2,h3{font-family:"Source Serif 4",Georgia,"Times New Roman",serif;font-weight:600;line-height:1.2;text-wrap:balance;margin:0}
+h1{font-size:clamp(28px,4.2vw,40px);letter-spacing:-.01em}
+h2{font-size:clamp(22px,2.8vw,28px);margin-bottom:18px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+h3{font-size:19px;margin:28px 0 10px}
+p{margin:0 0 14px}
+.col{max-width:840px;margin:0 auto}
+.text{max-width:none;text-align:justify;hyphens:auto}
+section{margin-top:64px}
+.eyebrow{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+/* header */
+header{padding-top:56px;text-align:center}
+header .venue{margin-top:14px;font-size:15px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.authors{margin-top:22px;font-size:19px}
+.authors span{white-space:nowrap}
+.authors sup{font-size:12px;color:var(--muted);margin-left:1px}
+.affil{margin-top:8px;color:var(--muted);font-size:15.5px;line-height:1.5}
+.affil sup{font-size:11px}
+.btns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:26px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border-radius:999px;background:var(--ink);color:var(--bg);font-weight:600;font-size:15px;border:1px solid var(--ink)}
+.btn:hover{text-decoration:none;opacity:.88}
+.btn svg{width:16px;height:16px;fill:currentColor}
+.btn:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* media */
+figure{margin:0}
+figure img,video{display:block;width:100%;max-width:100%;height:auto;border-radius:6px}
+figure.narrow img{max-width:700px;margin:0 auto}
+figure.wide90 img{max-width:90%;margin:0 auto}
+figcaption{margin-top:12px;font-size:15px;color:var(--muted);line-height:1.55}
+figcaption b{color:var(--ink)}
+.video-wrap{margin-top:40px;background:#000;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+.video-wrap video{border-radius:0}
+.video-note{margin-top:10px;font-size:15px;color:var(--muted);text-align:center}
+
+/* stages */
+.stages{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}
+.stage{border-top:3px solid var(--blue);padding-top:12px}
+.stage:nth-child(2){border-top-color:var(--orange)}
+.stage:nth-child(3){border-top-color:var(--green)}
+.stage .eyebrow{margin-bottom:4px}
+.stage p{font-size:15.5px;color:var(--muted);margin:0}
+.stage b{color:var(--ink);display:block;font-size:16px;margin-bottom:4px}
+@media (max-width:640px){.stages{grid-template-columns:1fr}}
+
+/* tables */
+.tbl{overflow-x:auto;margin:16px 0 8px;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:15px;font-variant-numeric:tabular-nums;background:var(--surface)}
+th,td{padding:7px 12px;text-align:center;border-bottom:1px solid var(--border);white-space:nowrap}
+th{font-weight:600;background:var(--soft);border-bottom:1px solid var(--ink)}
+td.para{text-align:left}
+tr.ours td{background:var(--ours)}
+tr.group td{border-top:2px solid var(--border)}
+td.para{color:var(--muted);font-size:13.5px;text-transform:uppercase;letter-spacing:.05em;vertical-align:middle}
+td.left,th.left{text-align:left}
+.b{font-weight:700}
+.u{text-decoration:underline;text-underline-offset:2px}
+.g{color:var(--gain);font-size:12.5px;margin-left:3px}
+.yes{color:var(--gain);font-weight:700}.no{color:var(--muted)}
+.tnote{font-size:14px;color:var(--muted);margin-top:4px}
+.two{display:grid;grid-template-columns:5fr 7fr;gap:28px;align-items:center;margin-top:16px}
+.two>*{min-width:0}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+
+/* bibtex */
+.bib{position:relative;background:var(--soft);border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin:0 0 14px;overflow-x:auto}
+.bib pre{margin:0;font-family:"Source Code Pro",ui-monospace,Menlo,Consolas,monospace;font-size:13.5px;line-height:1.55;white-space:pre}
+.copy{position:absolute;top:10px;right:10px;font:600 12px/1 "Source Sans 3",system-ui,sans-serif;padding:6px 10px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--ink);cursor:pointer}
+.copy:hover{border-color:var(--ink)}
+
+footer{margin-top:72px;padding-top:20px;border-top:1px solid var(--border);font-size:14.5px;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.btn{transition:opacity .15s}}
+</style>
+</head>
+<body>
+<div class="col">
+
+<header>
+  <h1>Does Peer Observation Help? Vision-Sharing Collaboration for Vision-Language Navigation</h1>
+  <div class="venue">ACCV 2026</div>
+  <div class="authors">
+    <span>Qunchao Jin<sup>1</sup></span>, &nbsp;
+    <span>Yiliao Song<sup>1</sup></span>, &nbsp;
+    <span>Qi Wu<sup>1,2</sup></span>
+  </div>
+  <div class="affil">
+    <sup>1</sup>Australian Institute for Machine Learning, Adelaide University<br>
+    <sup>2</sup>Responsible AI Research Centre, Australian Institute for Machine Learning
+  </div>
+  <div class="btns">
+    <a class="btn" href="https://arxiv.org/abs/2603.20804"><svg viewBox="0 0 16 16"><path d="M3 1.5A1.5 1.5 0 0 1 4.5 0h5.09c.4 0 .78.16 1.06.44l2.91 2.91c.28.28.44.66.44 1.06V14.5A1.5 1.5 0 0 1 12.5 16h-8A1.5 1.5 0 0 1 3 14.5Zm7.5 0V4a.5.5 0 0 0 .5.5h2.5Z"/></svg>Paper</a>
+    <a class="btn" href="https://github.com/QunchaoJin/CoVLN"><svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>Code</a>
+    <a class="btn" href="#video"><svg viewBox="0 0 16 16"><path d="M0 4a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1.6l3.3-1.9A1 1 0 0 1 16 4.6v6.8a1 1 0 0 1-1.7.9L11 10.4V12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2Z"/></svg>Video</a>
+    <a class="btn" href="#bibtex"><svg viewBox="0 0 16 16"><path d="M4 2h8v2H4zM2 6h12v2H2zM4 10h8v2H4zM6 14h4v2H6z"/></svg>BibTeX</a>
+  </div>
+
+  <figure class="video-wrap" id="video">
+    <video controls playsinline preload="metadata" poster="static/video/demo_poster.jpg">
+      <source src="static/video/demo.mp4" type="video/mp4">
+    </video>
+  </figure>
+  <p class="video-note">Two agents navigate the same house concurrently. Left: first-person view. Right: top-down map with both trajectories.</p>
+</header>
+
+<section>
+  <h2>Abstract</h2>
+  <div class="text">
+    <p>Vision-Language Navigation (VLN) systems are fundamentally constrained by partial observability, as an agent can only accumulate knowledge from locations it has personally visited. As multiple robots increasingly coexist in shared environments, a natural question arises: can agents navigating the same space benefit from each other's observations? In this work, we introduce Co-VLN, a minimalist, model-agnostic framework for systematically investigating whether and how peer observations from concurrently navigating agents can benefit VLN. When independently navigating agents identify common traversed locations, they exchange structured perceptual memory, effectively expanding each agent's receptive field at no additional exploration cost. We validate our framework on the R2R benchmark under two representative paradigms (the learning-based DUET and the zero-shot MapGPT), and further show that it generalizes to continuous environments with ETPNav. We also conduct extensive analytical experiments to systematically reveal the underlying dynamics of peer observation sharing in VLN. Results demonstrate that vision-sharing enabled model yields substantial performance improvements across both paradigms, establishing a strong foundation for future research in collaborative embodied navigation.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Motivation</h2>
+  <figure class="narrow">
+    <img src="static/images/intro.jpg" alt="Navigation without and with peer observation. Coverage rises from 35% to 65%." width="1600" height="1096" loading="lazy">
+    <figcaption><b>Peer observation sharing in VLN.</b> (a) A single agent navigates independently, with its perception limited to personally visited regions, resulting in only 35% spatial coverage. (b) When a peer agent independently navigates the same environment, their trajectories may overlap at a spatial section (yellow star), enabling knowledge exchange that expands perceptual coverage from 35% to 65% without additional exploration.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>Method</h2>
+  <figure>
+    <img src="static/images/arch.png" alt="Co-VLN three-stage framework" width="2184" height="662">
+    <figcaption><b>Overview of the Co-VLN framework.</b> If no spatial overlap occurs during an episode, an agent behaves exactly as the original baseline.</figcaption>
+  </figure>
+  <div class="stages">
+    <div class="stage"><div class="eyebrow">Stage 1</div><b>Independent navigation with distributed memory</b><p>Each agent follows its own instruction with the unmodified baseline and builds a private topological graph of visited and observed viewpoints.</p></div>
+    <div class="stage"><div class="eyebrow">Stage 2</div><b>Spatial overlap detection</b><p>At each step, nodes of the two graphs are matched: embedding-based (a lightweight discriminator, for DUET) or ID-based (simulator viewpoint IDs, for MapGPT).</p></div>
+    <div class="stage"><div class="eyebrow">Stage 3</div><b>Collaborative knowledge fusion</b><p>Matched nodes act as bridges; the peer's unseen nodes and edges are merged into an enriched graph, and the agent continues with its original policy over it.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Main Results</h2>
+  <h3>R2R val unseen</h3>
+  <div class="tbl">
+  <table>
+    <thead><tr><th>Paradigm</th><th class="left">Method</th><th>TL</th><th>NE ↓</th><th>OSR ↑</th><th>SR ↑</th><th>SPL ↑</th></tr></thead>
+    <tbody>
+      <tr><td class="para" rowspan="12">Supervised<br>Learning</td><td class="left">PREVALENT</td><td>10.19</td><td>4.71</td><td>--</td><td>58</td><td>53</td></tr>
+      <tr><td class="left">VLN↻BERT</td><td>12.01</td><td>3.93</td><td>69</td><td>63</td><td>57</td></tr>
+      <tr><td class="left">HAMT</td><td>11.46</td><td>3.62</td><td>73</td><td>66</td><td>61</td></tr>
+      <tr><td class="left">HOP+</td><td>11.76</td><td>3.49</td><td>--</td><td>67</td><td>61</td></tr>
+      <tr><td class="left">TD-STP</td><td>--</td><td>3.22</td><td>76</td><td>70</td><td>63</td></tr>
+      <tr><td class="left">BEVBert</td><td>14.55</td><td>2.81</td><td>84</td><td>75</td><td>64</td></tr>
+      <tr class="ours group"><td class="left">DUET (baseline)</td><td>13.94</td><td>3.31</td><td>80.54</td><td>71.52</td><td>60.41</td></tr>
+      <tr class="ours"><td class="left">DUET + Vision-Sharing</td><td>13.60</td><td>2.99</td><td>82.72</td><td>74.50</td><td>62.56</td></tr>
+      <tr class="ours"><td class="left">DUET + Vision-Sharing<sup>†</sup></td><td>14.62</td><td>2.63</td><td>85.06</td><td>76.23</td><td>62.90</td></tr>
+      <tr class="ours"><td class="left">DUET<sup>*</sup> + ScaleVLN</td><td>12.40</td><td>2.38</td><td>87.48</td><td>79.40</td><td>69.97</td></tr>
+      <tr class="ours"><td class="left">DUET<sup>*</sup> + ScaleVLN + Vision-Sharing</td><td>12.44</td><td>2.15</td><td>88.85</td><td>81.01</td><td>72.39</td></tr>
+      <tr class="ours"><td class="left">DUET<sup>*</sup> + ScaleVLN + Vision-Sharing<sup>†</sup></td><td>12.31</td><td class="b">2.12</td><td class="b">89.10</td><td class="b">82.46</td><td class="b">73.39</td></tr>
+      <tr class="group"><td class="para" rowspan="8">Zero-Shot</td><td class="left">NavGPT</td><td>11.45</td><td>6.46</td><td>42</td><td>34</td><td>29</td></tr>
+      <tr><td class="left">DiscussNav</td><td>9.69</td><td>5.32</td><td>61.0</td><td>43.0</td><td>40.0</td></tr>
+      <tr><td class="left">MapGPT</td><td>--</td><td>5.63</td><td>57.6</td><td>43.7</td><td>34.8</td></tr>
+      <tr><td class="left">MC-GPT</td><td>--</td><td>5.42</td><td>68.8</td><td>32.1</td><td>--</td></tr>
+      <tr><td class="left">MSNav</td><td>--</td><td>5.24</td><td>65.0</td><td>46.0</td><td>40.0</td></tr>
+      <tr><td class="left">SpatialGPT</td><td>--</td><td>5.56</td><td class="b">70.8</td><td>48.4</td><td>36.1</td></tr>
+      <tr class="ours group"><td class="left">MapGPT<sup>‡</sup> (baseline)</td><td>12.16</td><td>4.80</td><td>63.98</td><td>52.19</td><td>44.73</td></tr>
+      <tr class="ours"><td class="left">MapGPT<sup>‡</sup> + Vision-Sharing<sup>†</sup></td><td>12.20</td><td class="b">4.36</td><td>68.58</td><td class="b">55.81</td><td class="b">47.26</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="tnote">Shaded rows are ours. <b>Bold</b> marks the best within each paradigm. ‡ MapGPT uses Qwen3-VL-32B as the MLLM. † oracle viewpoint IDs for spatial overlap detection. * CLIP ViT-B/16 image features.</p>
+
+  <h3>R2R-CE val unseen (continuous environments)</h3>
+  <div class="tbl">
+  <table>
+    <thead><tr><th class="left">Method</th><th>TL</th><th>NE ↓</th><th>OSR ↑</th><th>SR ↑</th><th>SPL ↑</th></tr></thead>
+    <tbody>
+      <tr><td class="left">Seq2Seq</td><td>8.64</td><td>7.37</td><td>40</td><td>32</td><td>30</td></tr>
+      <tr><td class="left">HPN</td><td>7.62</td><td>6.31</td><td>40</td><td>36</td><td>34</td></tr>
+      <tr><td class="left">CM2</td><td>11.54</td><td>7.02</td><td>42</td><td>34</td><td>28</td></tr>
+      <tr><td class="left">WS-MGMAP</td><td>10.00</td><td>6.28</td><td>48</td><td>39</td><td>34</td></tr>
+      <tr><td class="left">CWP-CMA</td><td>10.90</td><td>6.20</td><td>52</td><td>41</td><td>36</td></tr>
+      <tr><td class="left">CWP-RecBERT</td><td>12.23</td><td>5.74</td><td>53</td><td>44</td><td>39</td></tr>
+      <tr><td class="left">Sim2Sim</td><td>10.69</td><td>6.07</td><td>52</td><td>43</td><td>36</td></tr>
+      <tr><td class="left">BEVBert</td><td>--</td><td>4.57</td><td class="b">67</td><td>59</td><td>50</td></tr>
+      <tr class="ours group"><td class="left">ETPNav (baseline)</td><td>11.99</td><td>4.71</td><td>64.71</td><td>57.21</td><td>49.15</td></tr>
+      <tr class="ours"><td class="left">ETPNav + Vision-Sharing</td><td>10.56</td><td class="b">4.66</td><td>64.71</td><td class="b">59.16</td><td class="b">51.79</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>Analysis</h2>
+
+  <h3>Scaling the number of concurrent peers</h3>
+  <div class="two">
+    <figure><img src="static/images/agent_scaling.png" alt="Metrics vs. number of peers" width="955" height="616" loading="lazy"></figure>
+    <div class="tbl" style="margin:0">
+    <table>
+      <thead><tr><th class="left">Peers (N)</th><th>Vision-Sharing</th><th>NE ↓</th><th>OSR ↑</th><th>SR ↑</th><th>SPL ↑</th></tr></thead>
+      <tbody>
+        <tr><td class="left">1 (baseline)</td><td class="no">✗</td><td>5.51</td><td>59.5</td><td>46.5</td><td>38.0</td></tr>
+        <tr><td class="left">2</td><td class="yes">✓</td><td>4.84</td><td>64.0</td><td>49.5</td><td>41.9</td></tr>
+        <tr><td class="left">3</td><td class="yes">✓</td><td class="b">4.24</td><td>71.5</td><td class="u">52.5</td><td>41.9</td></tr>
+        <tr><td class="left">4</td><td class="yes">✓</td><td class="u">4.26</td><td class="u">72.0</td><td class="b">53.5</td><td class="b">43.0</td></tr>
+        <tr><td class="left">5</td><td class="yes">✓</td><td>4.34</td><td class="b">75.0</td><td class="b">53.5</td><td class="u">42.3</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+  <p class="tnote">All metrics improve steadily from N=1 to N=3 and saturate beyond N=4. Each primary task is assigned N−1 peers with maximally overlapping ground-truth paths.</p>
+
+  <h3>Generalization across MLLMs</h3>
+  <div class="tbl">
+  <table>
+    <thead><tr><th class="left">MLLM</th><th>Vision-Sharing</th><th>NE ↓</th><th>OSR ↑</th><th>SR ↑</th><th>SPL ↑</th></tr></thead>
+    <tbody>
+      <tr class="group"><td class="left" rowspan="2">InternVL3.5-38B</td><td class="no">✗</td><td>6.60</td><td>50.5</td><td>37.0</td><td>31.1</td></tr>
+      <tr><td class="yes">✓</td><td>6.40<span class="g">(−0.20)</span></td><td>51.5<span class="g">(+1.0)</span></td><td>38.0<span class="g">(+1.0)</span></td><td>31.6<span class="g">(+0.5)</span></td></tr>
+      <tr class="group"><td class="left" rowspan="2">Gemini-3-Flash<sup>†</sup></td><td class="no">✗</td><td>6.09</td><td>40.5</td><td>38.0</td><td>35.2</td></tr>
+      <tr><td class="yes">✓</td><td>5.10<span class="g">(−0.99)</span></td><td>59.0<span class="g">(+18.5)</span></td><td>46.0<span class="g">(+8.0)</span></td><td>40.5<span class="g">(+5.3)</span></td></tr>
+      <tr class="group"><td class="left" rowspan="2">Qwen3-VL-32B</td><td class="no">✗</td><td>5.51</td><td>59.5</td><td>46.5</td><td>38.0</td></tr>
+      <tr><td class="yes">✓</td><td>4.84<span class="g">(−0.67)</span></td><td>64.0<span class="g">(+4.5)</span></td><td>49.5<span class="g">(+3.0)</span></td><td>41.9<span class="g">(+3.9)</span></td></tr>
+      <tr class="group"><td class="left" rowspan="2">GPT-5.2<sup>†</sup></td><td class="no">✗</td><td>4.35</td><td>67.5</td><td>54.5</td><td>46.8</td></tr>
+      <tr><td class="yes">✓</td><td class="b">3.47<span class="g">(−0.88)</span></td><td class="u">71.5<span class="g">(+4.0)</span></td><td class="u">60.0<span class="g">(+5.5)</span></td><td class="u">50.1<span class="g">(+3.3)</span></td></tr>
+      <tr class="group"><td class="left" rowspan="2">Gemini-2.5-Pro<sup>†</sup></td><td class="no">✗</td><td>4.28</td><td>68.5</td><td>56.0</td><td>49.1</td></tr>
+      <tr><td class="yes">✓</td><td class="u">3.76<span class="g">(−0.52)</span></td><td class="b">74.5<span class="g">(+6.0)</span></td><td class="b">64.5<span class="g">(+8.5)</span></td><td class="b">53.8<span class="g">(+4.7)</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="tnote">Vision-sharing helps every tested MLLM; the Gemini models gain the most (+8.0 and +8.5 SR). † closed-source models. <b>Bold</b> best, <span class="u">underlined</span> second best.</p>
+
+  <h3>Effect of scene area</h3>
+  <div class="tbl">
+  <table>
+    <thead><tr><th class="left">Area group</th><th>Vision-Sharing</th><th>SR ↑</th><th>SPL ↑</th><th>OSR ↑</th><th>NE ↓</th></tr></thead>
+    <tbody>
+      <tr class="group"><td class="left" rowspan="2">Small (&lt;250 m²)</td><td class="no">✗</td><td>56.75</td><td>49.95</td><td>68.65</td><td>3.77</td></tr>
+      <tr><td class="yes">✓</td><td>58.73<span class="g">(+1.98)</span></td><td>50.71<span class="g">(+0.76)</span></td><td>72.62<span class="g">(+3.97)</span></td><td>3.62<span class="g">(−0.15)</span></td></tr>
+      <tr class="group"><td class="left" rowspan="2">Medium (250–450 m²)</td><td class="no">✗</td><td>52.40</td><td>43.62</td><td>61.74</td><td>4.26</td></tr>
+      <tr><td class="yes">✓</td><td>55.81<span class="g">(+3.41)</span></td><td>46.75<span class="g b">(+3.13)</span></td><td>67.30<span class="g b">(+5.56)</span></td><td>3.89<span class="g">(−0.37)</span></td></tr>
+      <tr class="group"><td class="left" rowspan="2">Large (&gt;450 m²)</td><td class="no">✗</td><td>49.86</td><td>43.07</td><td>63.44</td><td>5.69</td></tr>
+      <tr><td class="yes">✓</td><td>54.42<span class="g b">(+4.56)</span></td><td>45.99<span class="g">(+2.92)</span></td><td>67.62<span class="g">(+4.18)</span></td><td>5.06<span class="g b">(−0.63)</span></td></tr>
+      <tr class="group"><td class="left b" rowspan="2">Overall</td><td class="no">✗</td><td>52.19</td><td>44.73</td><td>63.98</td><td>4.80</td></tr>
+      <tr><td class="yes">✓</td><td>55.81<span class="g">(+3.62)</span></td><td>47.26<span class="g">(+2.53)</span></td><td>68.58<span class="g">(+4.60)</span></td><td>4.36<span class="g">(−0.44)</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="tnote">The benefit grows with scene size: SR gain rises from +1.98 in small houses to +4.56 in large ones. MapGPT on R2R val unseen; bold marks the largest gain per metric.</p>
+
+  <h3>Effect of pairing strategy</h3>
+  <div class="tbl">
+  <table>
+    <thead><tr><th class="left">Baseline</th><th>Vision-Sharing</th><th class="left">Pairing strategy</th><th>NE ↓</th><th>OSR ↑</th><th>SR ↑</th><th>SPL ↑</th></tr></thead>
+    <tbody>
+      <tr class="group"><td class="left" rowspan="3">MapGPT</td><td class="no">✗</td><td class="left">--</td><td>4.80</td><td>64.0</td><td>52.2</td><td>44.7</td></tr>
+      <tr><td class="yes">✓</td><td class="left">random pairing</td><td class="u">4.66</td><td class="u">65.3</td><td class="u">53.4</td><td class="u">45.7</td></tr>
+      <tr><td class="yes">✓</td><td class="left">prior-based pairing</td><td class="b">4.36</td><td class="b">68.6</td><td class="b">55.8</td><td class="b">47.3</td></tr>
+      <tr class="group"><td class="left" rowspan="3">DUET</td><td class="no">✗</td><td class="left">--</td><td>3.31</td><td>80.5</td><td>71.5</td><td>60.4</td></tr>
+      <tr><td class="yes">✓</td><td class="left">random pairing</td><td class="u">3.24</td><td class="u">81.2</td><td class="u">72.6</td><td class="u">61.2</td></tr>
+      <tr><td class="yes">✓</td><td class="left">prior-based pairing</td><td class="b">2.99</td><td class="b">82.7</td><td class="b">74.5</td><td class="b">62.6</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="tnote">Even random pairing, which uses no spatial prior, beats the single-agent baseline on every metric. Prior-based pairing groups episodes whose ground-truth paths share viewpoints.</p>
+</section>
+
+<section>
+  <h2>Qualitative Results</h2>
+  <figure class="wide90">
+    <img src="static/images/vis.png" alt="Two cases where vision-sharing turns failure into success" width="1600" height="784" loading="lazy">
+    <figcaption><b>DUET with and without vision-sharing.</b> In Case 1 the isolated agent drifts upward into irrelevant rooms; with a peer's observations it recognises the mismatch and follows the correct path. In Case 2 the isolated agent heads in the opposite direction; peer observations reveal the structure to the right and redirect it to the goal. Peer observations reduce uncertainty at critical decision points.</figcaption>
+  </figure>
+</section>
+
+<section id="bibtex">
+  <h2>BibTeX</h2>
+  <div class="bib"><button class="copy" type="button" data-copy="bib1">Copy</button><pre id="bib1">@article{jin2026covln_arxiv,
+  title   = {Does Peer Observation Help? Vision-Sharing Collaboration for Vision-Language Navigation},
+  author  = {Jin, Qunchao and Song, Yiliao and Wu, Qi},
+  journal = {arXiv preprint arXiv:2603.20804},
+  year    = {2026}
+}</pre></div>
+  <p class="tnote" style="text-align:center;margin:0 0 14px">or</p>
+  <div class="bib"><button class="copy" type="button" data-copy="bib2">Copy</button><pre id="bib2">@inproceedings{jin2026covln,
+  title     = {Does Peer Observation Help? Vision-Sharing Collaboration for Vision-Language Navigation},
+  author    = {Jin, Qunchao and Song, Yiliao and Wu, Qi},
+  booktitle = {Asian Conference on Computer Vision (ACCV)},
+  year      = {2026}
+}</pre></div>
+</section>
+
+<footer>
+  Contact: qunchao.jin@adelaide.edu.au
+</footer>
+
+</div>
+<script>
+document.querySelectorAll('.copy').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var pre = document.getElementById(btn.dataset.copy);
+    var text = pre.textContent;
+    function done(ok){ btn.textContent = ok ? 'Copied' : 'Select & copy'; setTimeout(function(){ btn.textContent = 'Copy'; }, 1500); }
+    function fallback(){
+      var r = document.createRange(); r.selectNodeContents(pre);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); done(false);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function(){ done(true); }, fallback);
+    } else { fallback(); }
+  });
+});
+</script>
+</body>
+</html>
