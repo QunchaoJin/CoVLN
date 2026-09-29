@@ -81,17 +81,6 @@ prints SR / SPL / OSR / NE averaged over all episodes and per agent role, and sa
 }
 ```
 
-or
-
-```bibtex
-@inproceedings{jin2026covln,
-  title={Does Peer Observation Help? Vision-Sharing Collaboration for Vision-Language Navigation},
-  author={Jin, Qunchao and Song, Yiliao and Wu, Qi},
-  booktitle={Asian Conference on Computer Vision (ACCV)},
-  year={2026}
-}
-```
-
 ## Acknowledgement
 
 This codebase is built on [MapGPT](https://github.com/chen-judge/MapGPT). Thanks to the authors for releasing their code.
